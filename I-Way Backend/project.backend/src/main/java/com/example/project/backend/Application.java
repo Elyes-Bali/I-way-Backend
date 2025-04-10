@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
-@EnableAspectJAutoProxy
+@EnableAspectJAutoProxy 
 @EnableJpaRepositories
 public class Application {
 

@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Data
@@ -23,9 +26,40 @@ public class User implements Serializable {
 
     private UserRole role;
 
-    @Lob
-    @Column(columnDefinition = "longblob")
-    private byte[] img;
+    @Column(length = 1000000)
+    private String education;
+
+    @Column(length = 1000000)
+    private String experience;
+
+    @Column(length = 1000000)
+    private String statement;
+
+    @Column(length = 1000000)
+    private String skills;
+
+    private String adress;
+
+    private Long number;
+
+    private String eAddress;
+
+    private String speciality;
+
+    private String matricule;
+
+    @Column(nullable = false)
+    private boolean verified = true;  // Default is true
 
 
+    @Column(length = 1000)
+    private String imgUrl;
+
+    @Column(length = 1000)
+    private String signatureUrl;
+
+    private LocalDate birthDate;
+
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
+    private Set<DoctorAvailability> availabilities;
 }
