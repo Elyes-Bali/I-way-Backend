@@ -53,6 +53,8 @@ public class MedicalFile implements Serializable {
     private String previousMedication;
 
     private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(nullable = false)
+    private boolean closed ;
 
     @Column(length = 100, unique = true)
     private String code;

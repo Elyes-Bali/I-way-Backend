@@ -42,4 +42,17 @@ public class AppointmentServiceImpl implements AppointmentService{
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
     }
+
+    @Override
+    public void cancelAppointment(Long appointmentId) {
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new IOException("Appointment not found"));
+
+        if (appointment.getStatus() == AppointmentStatus.ACCEPTED) {
+            appointment.setCanceled(true);
+            appointmentRepository.save(appointment);
+        } else {
+            throw new ExpressionException("Only accepted appointments can be canceled.");
+        }
+    }
 }

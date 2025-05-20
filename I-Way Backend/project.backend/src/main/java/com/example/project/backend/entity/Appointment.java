@@ -42,4 +42,7 @@ public class Appointment {
         this.fullDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
+    @Column(nullable = false)
+    private boolean canceled = false;
+
 }

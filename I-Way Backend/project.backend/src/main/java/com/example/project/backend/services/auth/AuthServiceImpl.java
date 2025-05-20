@@ -7,6 +7,7 @@ import com.example.project.backend.entity.DoctorAvailability;
 import com.example.project.backend.entity.User;
 import com.example.project.backend.enums.UserRole;
 import com.example.project.backend.repositories.UserRepository;
+import com.example.project.backend.services.mailing.MailService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,6 +31,11 @@ public class AuthServiceImpl implements AuthService{
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
     private CloudinaryService cloudinaryService;
+
+    @Autowired
+    private MailService mailService;
+
+
     public UserDto createUser(SignupRequest signupRequest){
         User user = new User();
 
@@ -50,8 +56,7 @@ public class AuthServiceImpl implements AuthService{
                 return availability;
             }).collect(Collectors.toSet());
             user.setAvailabilities(availabilities);
-        }
-        if (signupRequest.getUserRole() == UserRole.PHARMACY) {
+        }else if (signupRequest.getUserRole() == UserRole.PHARMACY) {
             user.setVerified(false);
             user.setMatricule(signupRequest.getMatricule());
         }else {
@@ -90,6 +95,8 @@ public class AuthServiceImpl implements AuthService{
 
         User user = userOpt.get();
 
+        Boolean wasPreviouslyVerified = user.isVerified();
+
         if (name != null) user.setName(name);
         if (email != null) user.setEmail(email);
         if (education != null) user.setEducation(education);
@@ -120,6 +127,12 @@ public class AuthServiceImpl implements AuthService{
         }
         if (birthDate != null) user.setBirthDate(birthDate);
         userRepository.save(user);
+
+        if (user.getRole() == UserRole.DOCTOR && !wasPreviouslyVerified && verified != null && verified) {
+            mailService.sendDoctorVerificationEmail(user.getEmail(), user.getName());
+        }else if (user.getRole() == UserRole.PHARMACY && !wasPreviouslyVerified && verified != null && verified) {
+            mailService.sendPharmacyVerificationEmail(user.getEmail(), user.getName());
+        }
 
         // Convert to UserDto and return
         UserDto userDto = new UserDto();

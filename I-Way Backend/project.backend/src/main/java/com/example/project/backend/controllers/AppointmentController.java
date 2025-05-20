@@ -6,6 +6,7 @@ import com.example.project.backend.entity.User;
 import com.example.project.backend.repositories.AppointmentRepository;
 import com.example.project.backend.repositories.UserRepository;
 import com.example.project.backend.services.appointments.AppointmentService;
+import com.example.project.backend.services.mailing.MailService;
 import io.jsonwebtoken.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,10 @@ public class AppointmentController {
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+
+    @Autowired
+    private MailService mailService;
+
 
     @PostMapping("/book")
     public ResponseEntity<Map<String, String>> bookAppointment(@RequestParam Long doctorId, @RequestParam Long patientId, @RequestBody Appointment appointment) {
@@ -61,6 +66,7 @@ public class AppointmentController {
             appointmentDetails.put("accepted", appointment.isAccepted());
             appointmentDetails.put("status", appointment.getStatus());
             appointmentDetails.put("fullDate", appointment.getFullDate());
+            appointmentDetails.put("canceled",appointment.isCanceled());
 
             Map<String, String> patientDetails = new HashMap<>();
             if (appointment.getPatient() != null) {
@@ -90,6 +96,7 @@ public class AppointmentController {
             appointmentDetails.put("accepted", appointment.isAccepted());
             appointmentDetails.put("status", appointment.getStatus());
             appointmentDetails.put("fullDate", appointment.getFullDate());
+            appointmentDetails.put("canceled",appointment.isCanceled());
 
             Map<String, String> doctorDetails = new HashMap<>();
             if (appointment.getDoctor() != null) {
@@ -105,25 +112,6 @@ public class AppointmentController {
         return response;
     }
 
-
-//    @PutMapping("/app/{appointmentId}/status")
-//    public ResponseEntity<Map<String, String>> updateAppointmentStatus(
-//            @PathVariable Long appointmentId,
-//            @RequestParam boolean accepted) {
-//
-//        Appointment appointment = appointmentRepository.findById(appointmentId)
-//                .orElseThrow(() -> new RuntimeException("Appointment not found"));
-//
-//        appointment.setAccepted(accepted);
-//        appointmentRepository.save(appointment);
-//
-//        Map<String, String> response = new HashMap<>();
-//        response.put("status", "success");
-//        response.put("message", accepted ? "Appointment accepted" : "Appointment rejected");
-//
-//        return ResponseEntity.ok(response);
-//    }
-
     @PutMapping("/app/{appointmentId}/status")
     public ResponseEntity<Map<String, Object>> updateAppointmentStatus(
             @PathVariable Long appointmentId, @RequestParam AppointmentStatus status) {
@@ -134,6 +122,11 @@ public class AppointmentController {
         appointment.setStatus(status);
         appointmentRepository.save(appointment);
 
+        String patientEmail = appointment.getPatient().getEmail();
+        String patientName = appointment.getPatient().getName();
+        String doctorName = appointment.getDoctor().getName();
+        mailService.sendAppointmentStatusEmail(patientEmail, patientName,doctorName ,status.name());
+
         // Prepare the response as a JSON object
         Map<String, Object> response = new HashMap<>();
         response.put("status", "success");
@@ -141,7 +134,7 @@ public class AppointmentController {
         response.put("updatedStatus", appointment.getStatus().toString());  // Include updated status in response
 
         Map<String, String> notification = new HashMap<>();
-        notification.put("message", "Your appointment has been " + status);
+        notification.put("message", "Dr. " + doctorName + " has " + status + " your appointment.");
         notification.put("status", String.valueOf(status));
         notification.put("appointmentId", appointmentId.toString());
         // Send real-time notification to patient
@@ -155,6 +148,18 @@ public class AppointmentController {
     public ResponseEntity<List<Appointment>> getAllAppointments() {
         List<Appointment> appointments = appointmentService.getAllAppointments();
         return ResponseEntity.ok(appointments);
+    }
+
+
+    @PutMapping("/canceled/{appointmentId}/cancel")
+    public ResponseEntity<Map<String, String>> cancelAppointment(@PathVariable Long appointmentId) {
+        appointmentService.cancelAppointment(appointmentId);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("status", "success");
+        response.put("message", "Appointment canceled successfully");
+
+        return ResponseEntity.ok(response);
     }
 
 

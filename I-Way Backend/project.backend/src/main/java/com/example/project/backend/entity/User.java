@@ -51,7 +51,6 @@ public class User implements Serializable {
     @Column(nullable = false)
     private boolean verified = true;  // Default is true
 
-
     @Column(length = 1000)
     private String imgUrl;
 

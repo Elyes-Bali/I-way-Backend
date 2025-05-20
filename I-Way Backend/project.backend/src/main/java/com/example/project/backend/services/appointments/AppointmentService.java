@@ -8,4 +8,7 @@ public interface AppointmentService {
     void acceptAppointment(Long appointmentId);
     void rejectAppointment(Long appointmentId);
     List<Appointment> getAllAppointments();
+
+    void cancelAppointment(Long appointmentId);
+
 }

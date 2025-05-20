@@ -57,6 +57,7 @@ public class MedicalFileServiceImpl {
         existingMedicalFile.setHeight(updatedMedicalFile.getHeight());
         existingMedicalFile.setWeight(updatedMedicalFile.getWeight());
         existingMedicalFile.setPreviousMedication(updatedMedicalFile.getPreviousMedication());
+        existingMedicalFile.setClosed(updatedMedicalFile.isClosed());
 
         // Save the updated medical file
         return medicalFileRepository.save(existingMedicalFile);
