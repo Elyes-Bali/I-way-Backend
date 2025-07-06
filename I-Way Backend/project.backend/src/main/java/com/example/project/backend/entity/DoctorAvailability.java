@@ -18,6 +18,12 @@ public class DoctorAvailability {
     private LocalTime startTime;
     private LocalTime endTime;
 
+    private LocalTime secondTime;
+    private LocalTime secondendTime;
+
+    private LocalTime thirdTime;
+    private LocalTime thirdendTime;
+
     @ManyToOne
     @JoinColumn(name = "doctor_id")
     private User doctor;

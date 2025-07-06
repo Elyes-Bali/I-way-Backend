@@ -32,7 +32,7 @@ public class WebSecurityConfiguration {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Set stateless session
                 )
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/authenticate", "/sign-up", "/reclamations/**","/appointments/**","/availability/**","/availability/set","/update-user/**","/get-user/**","/all-users","/all-doctors","/notifications/**","/ws/**","/all-patients","/likes/**","/comments/**","/posts/**","/saved-posts/**","/news/**","/medical/**","/chat/**","/all-pharmacies").permitAll() // Public endpoints
+                        auth.requestMatchers("/authenticate", "/sign-up", "/reclamations/**","/appointments/**","/availability/**","/availability/set","/update-user/**","/get-user/**","/all-users","/all-doctors","/notifications/**","/ws/**","/all-patients","/likes/**","/comments/**","/posts/**","/saved-posts/**","/news/**","/medical/**","/chat/**","/all-pharmacies","/prescriptions/**").permitAll() // Public endpoints
                                 .requestMatchers("/api/**").authenticated() // Secure endpoints
                 );
 //                .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter
