@@ -1,0 +1,58 @@
+version: "3.9"
+#name: devops-workshop
+services:
+  mysqldb:
+    image: "mysql:8.0"
+    container_name: mysqldb
+    restart: always
+    ports:
+      - "3306:3306"
+    networks:
+      - springapimysql-net
+    environment:
+      MYSQL_DATABASE: medibot
+      MYSQL_USER: elyes
+      MYSQL_PASSWORD: elyes
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db:/data/db
+
+  api_service:
+    build: .
+    container_name: api_service
+    #restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - springapimysql-net
+    environment:
+      SPRING_APPLICATION_JSON: >
+        {
+          "spring.datasource.url": "jdbc:mysql://mysqldb:3306/medibot?allowPublicKeyRetrieval=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&createDatabaseIfNotExist=true&useLegacyDatetimeCode=false&serverTimezone=UTC",
+          "spring.datasource.username": "elyes",
+          "spring.datasource.password": "elyes"
+        }
+    stdin_open: true
+    tty: true
+
+    depends_on:
+      - mysqldb
+    volumes:
+      - .:/backend-1.0.0
+
+  frontend_angular:
+      build: "C:/Users/BALI/Desktop/Authentication  backend medibot/frontend"
+      container_name: frontend_angular
+      networks:
+        - springapimysql-net
+      ports:
+        - "4200:80"
+      depends_on:
+        - api_service
+        - mysqldb
+volumes:
+  db:
+
+networks:
+  springapimysql-net:
+    driver: bridge  # Specify the driver for the network
