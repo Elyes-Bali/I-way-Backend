@@ -40,16 +40,16 @@ services:
     volumes:
       - .:/backend-1.0.0
 
-  frontend_angular:
-      build: "C:/Users/BALI/Desktop/Authentication  backend medibot/frontend"
-      container_name: frontend_angular
-      networks:
-        - springapimysql-net
-      ports:
-        - "4200:80"
-      depends_on:
-        - api_service
-        - mysqldb
+  # frontend_angular:
+  #     build: "C:/Users/BALI/Desktop/Authentication  backend medibot/frontend"
+  #     container_name: frontend_angular
+  #     networks:
+  #       - springapimysql-net
+  #     ports:
+  #       - "4200:80"
+  #     depends_on:
+  #       - api_service
+  #       - mysqldb
 volumes:
   db:
 
